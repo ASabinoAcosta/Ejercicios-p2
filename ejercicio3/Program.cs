@@ -52,12 +52,13 @@ if (File.Exists(archivo))
     {
         string[] datos = registro.Split('|');
 
-        if (datos.Length == 7 && datos[0] == curso)
+        if (datos.Length == 8 && datos[1] == curso)
         {
-            string alumno = datos[1];
+            string matricula = datos[0];
+            string alumno = datos[2];
             List<double> notas = new List<double>();
 
-            for (int i = 2; i < 6; i++)
+            for (int i = 3; i < 7; i++)
             {
                 notas.Add(double.Parse(datos[i]));
             }
@@ -82,8 +83,10 @@ if (File.Exists(archivo))
                 literal = 'D';
             }
 
-            estudiantes[alumno] = new Estudiante
+            estudiantes[matricula] = new Estudiante
             {
+                Matricula = matricula,
+                Nombre = alumno,
                 Notas = notas,
                 Promedio = promedio,
                 Literal = literal
@@ -92,18 +95,61 @@ if (File.Exists(archivo))
     }
 }
 
+void GuardarEstudiantes()
+{
+    List<string> registros = new List<string>();
+
+    if (File.Exists(archivo))
+    {
+        foreach (string registro in File.ReadAllLines(archivo))
+        {
+            string[] datos = registro.Split('|');
+
+            if (datos.Length != 8 || datos[1] != curso)
+            {
+                registros.Add(registro);
+            }
+        }
+    }
+
+    foreach (var estudiante in estudiantes)
+    {
+        registros.Add(
+            $"{estudiante.Value.Matricula}|{curso}|{estudiante.Value.Nombre}|" +
+            $"{estudiante.Value.Notas[0]}|" +
+            $"{estudiante.Value.Notas[1]}|" +
+            $"{estudiante.Value.Notas[2]}|" +
+            $"{estudiante.Value.Notas[3]}|" +
+            $"{estudiante.Value.Literal}"
+        );
+    }
+
+    File.WriteAllLines(archivo, registros);
+}
+
+string GenerarMatricula()
+{
+    int numero = 1;
+
+    while (estudiantes.ContainsKey($"CDB-{numero:D4}"))
+    {
+        numero++;
+    }
+
+    return $"CDB-{numero:D4}";
+}
+
 while (runPrograma)
 {
-    Console.WriteLine($"""
-    
+    Console.WriteLine($@"
     ====== Colegio Dios es Bueno ======
     Curso: {curso}
-    
+
     1. Agregar un estudiante
     2. Eliminar un estudiante
     3. Reportes
     4. Salir
-    """);
+    ");
 
     Console.Write("Seleccione una opción: ");
     int respuesta = int.Parse(Console.ReadLine());
@@ -111,14 +157,11 @@ while (runPrograma)
     switch (respuesta)
     {
         case 1:
+            string matricula = GenerarMatricula();
+
+            Console.WriteLine($"Matrícula asignada: {matricula}");
             Console.Write("Inserte nombre del alumno/a: ");
             string alumno = Console.ReadLine();
-
-            if (estudiantes.ContainsKey(alumno))
-            {
-                Console.WriteLine("Este estudiante ya está registrado.");
-                break;
-            }
 
             List<double> notas = new List<double>();
 
@@ -150,55 +193,31 @@ while (runPrograma)
                 literal = 'D';
             }
 
-            estudiantes.Add(alumno, new Estudiante
+            estudiantes.Add(matricula, new Estudiante
             {
+                Matricula = matricula,
+                Nombre = alumno,
                 Notas = notas,
                 Promedio = promedio,
                 Literal = literal
             });
 
-            List<string> registros = new List<string>();
-
-            foreach (var estudiante in estudiantes)
-            {
-                registros.Add(
-                    $"{curso}|{estudiante.Key}|" +
-                    $"{estudiante.Value.Notas[0]}|" +
-                    $"{estudiante.Value.Notas[1]}|" +
-                    $"{estudiante.Value.Notas[2]}|" +
-                    $"{estudiante.Value.Notas[3]}|{estudiante.Value.Literal}"
-                );
-            }
-
-            File.WriteAllLines(archivo, registros);
+            GuardarEstudiantes();
             Console.WriteLine("Estudiante agregado correctamente.");
             break;
 
         case 2:
-            Console.Write("Inserte el nombre del estudiante a eliminar: ");
-            string nombreEliminar = Console.ReadLine();
+            Console.Write("Inserte la matrícula del estudiante a eliminar: ");
+            string matriculaEliminar = Console.ReadLine();
 
-            if (estudiantes.Remove(nombreEliminar))
+            if (estudiantes.Remove(matriculaEliminar))
             {
-                List<string> registrosActualizados = new List<string>();
-
-                foreach (var estudiante in estudiantes)
-                {
-                    registrosActualizados.Add(
-                        $"{curso}|{estudiante.Key}|" +
-                        $"{estudiante.Value.Notas[0]}|" +
-                        $"{estudiante.Value.Notas[1]}|" +
-                        $"{estudiante.Value.Notas[2]}|" +
-                        $"{estudiante.Value.Notas[3]}|{estudiante.Value.Literal}"
-                    );
-                }
-
-                File.WriteAllLines(archivo, registrosActualizados);
+                GuardarEstudiantes();
                 Console.WriteLine("Estudiante eliminado correctamente.");
             }
             else
             {
-                Console.WriteLine("No se encontró el estudiante.");
+                Console.WriteLine("No se encontró un estudiante con esa matrícula.");
             }
             break;
 
@@ -211,17 +230,18 @@ while (runPrograma)
             Console.WriteLine($"\n====== Reporte del curso {curso} ======");
 
             var estudiantesOrdenados = estudiantes.OrderBy(estudiante =>
-                estudiante.Key.Split(' ').Last()
+                estudiante.Value.Nombre.Split(' ').Last()
             );
 
             Console.WriteLine(
-                $"{"Estudiante",-20}" +
-                $"{"P1",-10}" +
-                $"{"P2",-10}" +
-                $"{"P3",-10}" +
-                $"{"P4",-10}" +
+                $"{"Matrícula",-15}" +
+                $"{"Estudiante",-25}" +
+                $"{"P1",-8}" +
+                $"{"P2",-8}" +
+                $"{"P3",-8}" +
+                $"{"P4",-8}" +
                 $"{"Promedio",-12}" +
-                $"{"Literal",-10}"
+                $"{"Literal",-8}"
             );
 
             foreach (var estudiante in estudiantesOrdenados)
@@ -244,13 +264,14 @@ while (runPrograma)
                 }
 
                 Console.WriteLine(
-                    $"{estudiante.Key,-20}" +
-                    $"{estudiante.Value.Notas[0],-10}" +
-                    $"{estudiante.Value.Notas[1],-10}" +
-                    $"{estudiante.Value.Notas[2],-10}" +
-                    $"{estudiante.Value.Notas[3],-10}" +
+                    $"{estudiante.Value.Matricula,-15}" +
+                    $"{estudiante.Value.Nombre,-25}" +
+                    $"{estudiante.Value.Notas[0],-8}" +
+                    $"{estudiante.Value.Notas[1],-8}" +
+                    $"{estudiante.Value.Notas[2],-8}" +
+                    $"{estudiante.Value.Notas[3],-8}" +
                     $"{estudiante.Value.Promedio,-12:F2}" +
-                    $"{estudiante.Value.Literal}"
+                    $"{estudiante.Value.Literal,-8}"
                 );
             }
 
@@ -275,6 +296,8 @@ while (runPrograma)
 
 class Estudiante
 {
+    public string Matricula { get; set; }
+    public string Nombre { get; set; }
     public List<double> Notas { get; set; }
     public double Promedio { get; set; }
     public char Literal { get; set; }
