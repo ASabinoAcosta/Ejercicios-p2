@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Sara\\.nuget\\packages\\": {}
+    "/home/codespace/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Sara\\Desktop\\Ejercicios\\ejercicio3\\ejercicio3.csproj",
+      "projectUniqueName": "/workspaces/Ejercicios-p2/ejercicio3/ejercicio3.csproj",
       "projectName": "ejercicio3",
-      "projectPath": "C:\\Users\\Sara\\Desktop\\Ejercicios\\ejercicio3\\ejercicio3.csproj",
-      "packagesPath": "C:\\Users\\Sara\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Sara\\Desktop\\Ejercicios\\ejercicio3\\obj\\",
+      "projectPath": "/workspaces/Ejercicios-p2/ejercicio3/ejercicio3.csproj",
+      "packagesPath": "/home/codespace/.nuget/packages/",
+      "outputPath": "/workspaces/Ejercicios-p2/ejercicio3/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Sara\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/codespace/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -67,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
