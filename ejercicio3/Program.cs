@@ -254,14 +254,13 @@ while (runPrograma)
                 );
             }
 
-            Console.WriteLine($"""
-            
-            Cantidad de estudiantes de cada literal:
-            Estudiantes en A: {excelente}
-            Estudiantes en B: {bien}
-            Estudiantes en C: {pasable}
-            Estudiantes reprobados: {reprobado}
-            """);
+            Console.WriteLine(
+                $"\nCantidad de estudiantes de cada literal:\n" +
+                $"Estudiantes en A: {excelente}\n" +
+                $"Estudiantes en B: {bien}\n" +
+                $"Estudiantes en C: {pasable}\n" +
+                $"Estudiantes reprobados: {reprobado}"
+            );
             break;
 
         case 4:
